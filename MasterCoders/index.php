@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <?php include 'header.php' ?>
+  <?php include 'header.html' ?>
+  <link rel="stylesheet" type="text/css" href="index.css">
 </head>
 <body>
   <header>
-    <?php include 'navbar.php' ?>
+    <?php include 'navbar.html' ?>
   </header>
   <main>
     <!--  Placeholder -->
   </main>
 </body>
 <footer>
-  <?php include 'footer.php' ?>
+  <?php include 'footer.html' ?>
 </footer>
 </html>
