@@ -1,5 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+<!-- <style>
+table, th, td {
+  border: 1px solid black;
+}
+</style> -->
 <head>
   <?php include 'header.php' ?>
 </head>
@@ -45,12 +50,68 @@
     <span style="color:red;"><?php 
     if($both_warning_display){echo $both_warning; }
     elseif($n_warning_display){echo $n_warning; }
-    elseif($num_colors_warning_display){echo $num_colors_warning; } else{echo '';}
+    elseif($num_colors_warning_display){echo $num_colors_warning; }
     ?>
     </span>
 
     <input type="submit" value="generate tables">
     </form>
+
+  <!-- If Validation has been passed -->
+  <?php
+  if(isset($_GET["n"]) && isset($_GET["num_colors"]) && !$num_colors_warning_display && !$n_warning_display){
+    //Print 2 tables, one 2 columns x num_colors
+    $t1_num_rows = $_GET["num_colors"];
+
+    echo "<table>";
+    for($i = 0; $i < $t1_num_rows; $i++){
+      echo "<tr>";
+
+      //column 1
+      echo "<td>a";
+      echo "</td>";
+
+      //column 2
+      echo "<td>b";
+      echo "</td>";
+
+      echo "</tr>";
+    }
+    echo "</table>";
+
+    //2nd table n+1 X n+1 Top row: A-Z Left Column: 1-26
+    $t2_n = $_GET["n"];
+
+    $alphabet = array("","A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z");
+    $numbering = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26);
+
+    array_splice($alphabet, $t2_n + 1);
+    array_splice($numbering, $t2_n);
+
+    echo "<table>";
+      echo "<tr>";
+      foreach($alphabet as $x){ //column headers
+        echo "<th>";
+        echo $x;
+        echo "</th>";
+      } 
+      echo "</tr>";
+      foreach($numbering as $y){ //row labels
+        echo "<tr>";
+        echo "<td>";
+        echo $y;
+        echo "</td>";
+        // foreach(){
+        //   echo "<td>";
+        //   //echo "color data here";
+        //   echo "/<td>";
+        // }
+        echo "</tr>";
+      }
+    echo "</table>";
+  }
+
+  ?>
   </main>
 </body>
 <footer>
