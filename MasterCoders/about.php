@@ -43,10 +43,19 @@
              world of technology!
         </p>
       </div>
-      <div class="about-person">
-        <img src="image2.jpg" alt="Person 2">
-        <h3>Person 2</h3>
-        <p>Bio for Person 2 goes here.</p>
+      <div class="about-michelle">
+        <img src="images/michelle-pic.jpg" alt="Michelle Cortes" width="250px">
+        <h3>Michelle Cortes</h3>
+        <p>Hiya! My name is Michelle. I'm from the Western Slope of Colorado and I'm a graduating
+          Senior this year. Since young I've been skiing and snowboarding and in the summer I 
+          enjoy paddleboarding and hiking in the wilderness. I also travel a lot to different places 
+          around the world and I most recently went to Ireland!
+        </p>
+        <p>
+          Before going back to school to get my Bachelors in Computer Science, I worked at my local 
+          school district as a part of their adminsitration for four years. I returned to school in 
+          order to pursue my longtime dream of recieving my CS degree.
+        </p>
       </div>
       <div class="about-person">
         <img src="image3.jpg" alt="Person 3">
