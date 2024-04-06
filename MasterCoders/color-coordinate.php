@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-<!-- <style>
+<style>
 table, th, td {
   border: 1px solid black;
 }
-</style> -->
+</style>
 <head>
   <?php include 'header.php' ?>
 </head>
@@ -63,12 +63,44 @@ table, th, td {
     //Print 2 tables, one 2 columns x num_colors
     $t1_num_rows = $_GET["num_colors"];
 
+    $all_color_names = array("Red", "Orange", "Yellow", "Green", "Blue", "Purple", "Grey", "Brown", "Black", "Teal");
+    $current_colors = array("Red", "Orange", "Yellow", "Green", "Blue", "Purple", "Grey", "Brown", "Black", "Teal");
+    array_splice($current_colors, $t1_num_rows); //current colors only has the first of however many values
+
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+      $selected_colors = $_POST['color'];
+      }
+
     echo "<table>";
-    for($i = 0; $i < $t1_num_rows; $i++){
+    echo "<form method ='post'>";
+
+
+    for($i = 0; $i < $t1_num_rows; $i++){ //for each indices
       echo "<tr>";
 
       //column 1
-      echo "<td>a";
+      echo "<td>";
+
+        echo "<select name='color[]' id='color'>";
+
+        foreach($all_color_names as $color){ //each key and value in array
+          echo "<option value= ";
+
+          echo strtolower($color);
+
+          if($color == $all_color_names[$i]){ //if current value is i-th indeces it is selected upon gneration
+            echo " selected";
+          }
+
+          echo ">";
+          
+
+          echo $color;
+
+          echo "</option>";
+        }
+
+      echo "</select>";
       echo "</td>";
 
       //column 2
@@ -77,6 +109,8 @@ table, th, td {
 
       echo "</tr>";
     }
+
+    echo "</form>";
     echo "</table>";
 
     //2nd table n+1 X n+1 Top row: A-Z Left Column: 1-26
