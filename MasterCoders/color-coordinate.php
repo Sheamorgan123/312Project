@@ -64,40 +64,57 @@ table, th, td {
     $t1_num_rows = $_GET["num_colors"];
 
     $all_color_names = array("Red", "Orange", "Yellow", "Green", "Blue", "Purple", "Grey", "Brown", "Black", "Teal");
-    $current_colors = array("Red", "Orange", "Yellow", "Green", "Blue", "Purple", "Grey", "Brown", "Black", "Teal");
-    array_splice($current_colors, $t1_num_rows); //current colors only has the first of however many values
+    $these_colors = array("Red", "Orange", "Yellow", "Green", "Blue", "Purple", "Grey", "Brown", "Black", "Teal");
 
+    array_splice($these_colors, $t1_num_rows);
+
+    $j = 0;
+    foreach($these_colors as $c) { //set each beginning color variable
+        ${"color" . $j} = $c;
+        $j++;
+    }
+    
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
-      $selected_colors = $_POST['color'];
-      }
+        for ($k = 0; $k < $t1_num_rows; $k++) { //set each beginning color variable
+            ${"color" . $k} = $_POST["color" . $k];
+        }
+    }
 
     echo "<table>";
     echo "<form method ='post'>";
 
 
-    for($i = 0; $i < $t1_num_rows; $i++){ //for each indices
+    for($i = 0; $i < $t1_num_rows; $i++){ //for each row
       echo "<tr>";
 
       //column 1
       echo "<td>";
+      
+      echo "<select name='color$i' id='color$i' onchange='this.form.submit()'>";
 
-        echo "<select name='color[]' id='color'>";
+        foreach($all_color_names as $color){
 
-        foreach($all_color_names as $color){ //each key and value in array
-          echo "<option value= ";
-
-          echo strtolower($color);
-
-          if($color == $all_color_names[$i]){ //if current value is i-th indeces it is selected upon gneration
-            echo " selected";
+          //if $color1 == $color
+          if (${"color". $i} == $color){ //if the current dropdown is the given color
+            echo "<option value='$color' selected='selected'>$color </option>";
+          }
+          else{ //curent row does not match given color
+            $already_active = false; //color isn't in current row, checking if it's in any other row
+            for($l = 0; $l < $t1_num_rows; $l++){ //for each row
+              if(${"color" . $l} == $color){ //check if the color for that row matches the current color
+                $already_active = true; // if it does that color is already active
+                break;
+              }
+            }
+          if ($already_active) { //if color is not selected in this dropdown but it is in other
+                //you don't want to actaully be able to select it!!!
+                echo "<option value='" . ${"color" . $i} . "'>$color</option>"; //name of color trying to be selected?
+             } //if it's not selected by this dropdown, and not selected by any other dropdown, do a regular echo
+             else {
+                echo "<option value='$color'>$color</option>"; // option but not selected
+             }
           }
 
-          echo ">";
-          
-
-          echo $color;
-
-          echo "</option>";
         }
 
       echo "</select>";
@@ -108,7 +125,10 @@ table, th, td {
       echo "</td>";
 
       echo "</tr>";
+      
     }
+
+      echo $warning;
 
     echo "</form>";
     echo "</table>";
