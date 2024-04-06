@@ -43,7 +43,7 @@
              world of technology!
         </p>
       </div>
-      <div class="about-michelle">
+      <div class="about-person">
         <img src="images/michelle-pic.jpg" alt="Michelle Cortes" width="250px">
         <h3>Michelle Cortes</h3>
         <p>Hiya! My name is Michelle. I'm from the Western Slope of Colorado and I'm a graduating
