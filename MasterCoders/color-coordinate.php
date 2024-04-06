@@ -6,11 +6,12 @@ table, th, td {
 }
 </style>
 <head>
-  <?php include 'header.php' ?>
+  <title>Master Coders | Color Generation</title>
+  <?php include 'header.html' ?>
 </head>
 <body>
   <header>
-    <?php include 'navbar.php' ?>
+    <?php include 'navbar.html' ?>
   </header>
   <main>
     <!-- 2 inputs, one for number of rows/columns, one for number of colors  -->
@@ -169,6 +170,6 @@ table, th, td {
   </main>
 </body>
 <footer>
-  <?php include 'footer.php' ?>
+  <?php include 'footer.html' ?>
 </footer>
 </html>
