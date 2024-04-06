@@ -17,6 +17,12 @@
       margin: 10px;
       text-align: center;
     }
+    .about-person p {
+      margin: 0 10px 0 10px;
+      padding: 5px 7px 5px 7px;
+      text-align: justify;
+      border: 1px dotted rgb(24, 177, 44);
+    }
   </style>
 </head>
 <body>
@@ -50,8 +56,7 @@
           Senior this year. Since young I've been skiing and snowboarding in the winter months and 
           in the summer months I enjoy paddleboarding and hiking in the wilderness. I also travel a 
           lot around the world. Most recently I toured all over Southern Ireland!
-        </p>
-        <p>
+        <br> <br>
           Before going back to school to get my Bachelors in Computer Science I worked at my local 
           school district as a part of their adminsitration for four years. I returned to school in 
           order to pursue my longtime dream of recieving my CS degree.
