@@ -1,9 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <style>
-table, th, td {
+th, td {
   border: 1px solid black;
+  padding: 8px;
 }
+table{
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.left-column {
+  width: 20%;
+}
+
+.right-column {
+  width: 80%;
+}
+
+select {
+  width: 100%; /* Make dropdowns fill their container */
+  padding: 5px; /* Add padding to dropdowns */
+}
+
 </style>
 <head>
   <title>Master Coders | Color Generation</title>
@@ -14,6 +33,7 @@ table, th, td {
     <?php include 'navbar.html' ?>
   </header>
   <main>
+  <h2 style="text-align: center;">Color Generation</h2>
     <!-- 2 inputs, one for number of rows/columns, one for number of colors  -->
     <form method="get" action="<?php
       $n = $_GET["n"];
@@ -76,8 +96,13 @@ table, th, td {
     }
     
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
+      $warning = "";
         for ($k = 0; $k < $t1_num_rows; $k++) { //set each beginning color variable
             ${"color" . $k} = $_POST["color" . $k];
+            if (strpos(${"color" . $k}, '!') !== false) { // Check if '!' exists in the color string
+              ${"color" . $k} = substr(${"color" . $k}, 1); //remove exclamation point
+              $warning = "<span style='color: red;'>Maximum one selection per color</span>"; // Update warning message
+          }
         }
     }
 
@@ -89,7 +114,7 @@ table, th, td {
       echo "<tr>";
 
       //column 1
-      echo "<td>";
+      echo "<td class='left-column'>";
       
       echo "<select name='color$i' id='color$i' onchange='this.form.submit()'>";
 
@@ -109,7 +134,7 @@ table, th, td {
             }
           if ($already_active) { //if color is not selected in this dropdown but it is in other
                 //you don't want to actaully be able to select it!!!
-                echo "<option value='" . ${"color" . $i} . "'>$color</option>"; //name of color trying to be selected?
+                echo "<option value='!" . ${"color" . $i} . "'>$color</option>"; //name of color trying to be selected?
              } //if it's not selected by this dropdown, and not selected by any other dropdown, do a regular echo
              else {
                 echo "<option value='$color'>$color</option>"; // option but not selected
@@ -122,7 +147,7 @@ table, th, td {
       echo "</td>";
 
       //column 2
-      echo "<td>b";
+      echo "<td class='right-column'>";
       echo "</td>";
 
       echo "</tr>";
@@ -130,6 +155,8 @@ table, th, td {
     }
 
       echo $warning;
+
+    echo "<br>";
 
     echo "</form>";
     echo "</table>";
@@ -143,6 +170,7 @@ table, th, td {
     array_splice($alphabet, $t2_n + 1);
     array_splice($numbering, $t2_n);
 
+    echo "<br>";
     echo "<table>";
       echo "<tr>";
       foreach($alphabet as $x){ //column headers
@@ -156,11 +184,11 @@ table, th, td {
         echo "<td>";
         echo $y;
         echo "</td>";
-        // foreach(){
-        //   echo "<td>";
-        //   //echo "color data here";
-        //   echo "/<td>";
-        // }
+        for($i = 0; $i < count($alphabet) - 1; $i++){
+          echo "<td>";
+          // echo "color data here";
+          echo "</td>";
+        }
         echo "</tr>";
       }
     echo "</table>";
