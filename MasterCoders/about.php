@@ -79,10 +79,15 @@
         </p>
       </div>
       <div class="about-person">
-        <img src="image4.jpg" alt="Person 4">
-        <h3>Person 4</h3>
-        <p>Bio for Person 4 goes here.</p>
-      </div>
+    <img src="images/shea-pic.jpeg" alt="Shea Spalding" width="250px">
+    <h3>Shea Spalding</h3>
+    <p>Hello! My name is Shea. I am from Albuquerque, New Mexico, and I am currently planning to graduate in December 2024 with a degree in Computer Science.
+        <br><br>
+        Outside of CS, I enjoy skiing, yoga, video games, and traveling. I also have a passion for engineering projects. One of my recent endeavors was creating an eye tracker for an experiment I am working on with a group.
+        <br><br>
+        I am excited about learning new things and collaborating with a team of like-minded individuals.
+    </p>
+  </div>
     </section>
   </main>
   <footer>
