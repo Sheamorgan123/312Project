@@ -66,9 +66,17 @@
         </p>
       </div>
       <div class="about-person">
-        <img src="image3.jpg" alt="Person 3">
-        <h3>Person 3</h3>
-        <p>Bio for Person 3 goes here.</p>
+        <img src="images/varonika-pic.JPEG" alt="Varonika Wilson" width="250px">
+        <h3>Varonika Wilson</h3>
+        <p>My name is Varonika Wilson, I'm also from Grand Junction, Colorado, and am graduting in May
+          with my Bachelors in Computer Science. I have loved learning all about programming, and how rewarding
+          it is to solve a problem. My favorite focus CS had been web design and I hope
+          to continue learning in my free time over the Summer.
+          <br> <br>
+          Outside of my education I love reading, hammocking, and playing video games(recently Stardew Valley).
+          I'm exciting to be a part of this amazing team, and to be gaining skills not only in modern web
+           applications, but learning to work as a part of a team!
+        </p>
       </div>
       <div class="about-person">
         <img src="image4.jpg" alt="Person 4">
