@@ -23,10 +23,15 @@ select {
   padding: 5px; /* Add padding to dropdowns */
 }
 
+main{
+  padding-bottom: 300px;
+}
+
 </style>
 <head>
   <title>Master Coders | Color Generation</title>
   <?php include 'header.html' ?>
+  <link rel="stylesheet" type="text/css" href="index.css">
 </head>
 <body>
   <header>
@@ -34,53 +39,59 @@ select {
   </header>
   <main>
   <h2 style="text-align: center;">Color Generation</h2>
-    <!-- 2 inputs, one for number of rows/columns, one for number of colors  -->
-    <form method="get" action="<?php
-      $n = $_GET["n"];
-      $num_colors = $_GET["num_colors"];
 
-      $n_warning = 'Table size must be a value between 1 and 26';
-      $num_colors_warning = 'Color must be a value between 1 and 10';
-      $both_warning = 'Values must be between denoted range';
-
-      $n_warning_display = false;
-      $num_colors_warning_display = false;
-      $both_warning_display = false;
-
-      if (!isset($_GET["n"])){
-      } else if ($n > 26 || $n < 1){
-        $n_warning_display = true;
-      }
-      
-      if(!isset($_GET["num_colors"])){
-      } else if($num_colors > 10 || $num_colors < 1){
-        $num_colors_warning_display = true;
-      }
-
-      if($n_warning_display && $num_colors_warning_display){
-        $both_warning_display = true;
-      }
-
-    ?>">
-
-    <label for="n">Table Size(1-26)</label>
-    <input type="text" name="n" id="n">
-
-    <label for="num_colors">Color(1-10)</label>
-    <input type="text" name="num_colors" id="num_colors">
-    <span style="color:red;"><?php 
-    if($both_warning_display){echo $both_warning; }
-    elseif($n_warning_display){echo $n_warning; }
-    elseif($num_colors_warning_display){echo $num_colors_warning; }
-    ?>
-    </span>
-
-    <input type="submit" value="generate tables">
-    </form>
-
-  <!-- If Validation has been passed -->
   <?php
+
+    $n_warning = 'Table size must be a value between 1 and 26';
+    $num_colors_warning = 'Color must be a value between 1 and 10';
+    $both_warning = 'Values must be between denoted range';
+
+    $n_warning_display = false;
+    $num_colors_warning_display = false;
+    $both_warning_display = false;
+
+    if (isset($_GET["n"])){
+    $n = $_GET["n"];
+    if ($n > 26 || $n < 1){
+        $n_warning_display = true;
+
+        }
+    } 
+
+    if(isset($_GET["num_colors"])){
+    $num_colors = $_GET["num_colors"];
+    if($num_colors > 10 || $num_colors < 1){
+        $num_colors_warning_display = true;
+        }
+    } 
+
+    if($n_warning_display && $num_colors_warning_display){
+    $both_warning_display = true;
+    }
+
+?>
+
+<form method="get" >
+
+<label for="n">Table Size(1-26)</label>
+<input type="text" name="n" id="n">
+
+<label for="num_colors">Color(1-10)</label>
+<input type="text" name="num_colors" id="num_colors">
+<span style="color:red;"><?php 
+if($both_warning_display){echo $both_warning; }
+elseif($n_warning_display){echo $n_warning; }
+elseif($num_colors_warning_display){echo $num_colors_warning; }
+?>
+</span>
+
+<input type="submit" value="submit">
+</form>
+
+<?php
+
   if(isset($_GET["n"]) && isset($_GET["num_colors"]) && !$num_colors_warning_display && !$n_warning_display){
+    
     //Print 2 tables, one 2 columns x num_colors
     $t1_num_rows = $_GET["num_colors"];
 
@@ -95,10 +106,13 @@ select {
         $j++;
     }
     
+    $warning = "";
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
       $warning = "";
         for ($k = 0; $k < $t1_num_rows; $k++) { //set each beginning color variable
-            ${"color" . $k} = $_POST["color" . $k];
+            if(isset($_POST["color" . $k])){
+                ${"color" . $k} = $_POST["color" . $k];
+            }
             if (strpos(${"color" . $k}, '!') !== false) { // Check if '!' exists in the color string
               ${"color" . $k} = substr(${"color" . $k}, 1); //remove exclamation point
               $warning = "<span style='color: red;'>Maximum one selection per color</span>"; // Update warning message
