@@ -21,10 +21,14 @@
       margin: 0 10px 0 10px;
       padding: 5px 7px 5px 7px;
       text-align: justify;
-      border: 2px dotted rgb(24, 177, 44);
+      color: #333;
     }
     .about-person img {
       border: 2px solid rgb(24, 177, 44);
+      border-radius: 50px;
+    }
+    .about-person h3 {
+      color:rgb(24, 177, 44);
     }
   </style>
 </head>
