@@ -14,7 +14,7 @@ body {
 
 /* Header styles */
 header {
-    background-color: #007bff; /* primary color */
+    background-color: #0056b3; /* primary color */
     color: #fff; /* white text*/
     padding: 20px 0;
     text-align: center;
@@ -38,7 +38,7 @@ header h1 {
 
 /* Nav styles */
 .navbar {
-    background-color: #0056b3; /* darker shade of primary color */
+    background-color: #003870; /* darker shade of primary color */
     padding: 10px 0;
     text-align: center;
 }
@@ -85,7 +85,7 @@ header h1 {
 
 /* footer style */
 footer {
-    background-color: #007bff;
+    background-color: #003870;
     color: #fff;
     text-align: center;
     padding: 20px 0;
