@@ -10,7 +10,7 @@
     <?php include 'navbar.html' ?>
   </header>
   <main>
-    <!--  Placeholder -->
+    <span id="logo"><img src="images/logo.jpg" alt="Logo"></span>
   </main>
 </body>
 <footer>

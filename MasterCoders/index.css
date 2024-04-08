@@ -27,8 +27,13 @@ header h1 {
 }
 
 /*Logo*/
-header img {
+#logo img {
     max-width: 200px; /*logo size (i think) */
+}
+
+#logo {
+    display: flex;
+    justify-content: space-around;
 }
 
 /* Nav styles */
