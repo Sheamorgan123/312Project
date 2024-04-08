@@ -24,11 +24,11 @@
       color: #333;
     }
     .about-person img {
-      border: 2px solid rgb(24, 177, 44);
+      border: 2px solid #003870;
       border-radius: 50px;
     }
     .about-person h3 {
-      color:rgb(24, 177, 44);
+      color: #003870;
     }
   </style>
 </head>
