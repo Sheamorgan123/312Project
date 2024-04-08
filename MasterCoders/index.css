@@ -32,29 +32,29 @@ header img {
 }
 
 /* Nav styles */
-nav {
+.navbar {
     background-color: #0056b3; /* darker shade of primary color */
     padding: 10px 0;
     text-align: center;
 }
 
-nav ul {
+.navbar ul {
     list-style-type: none;
 }
 
-nav ul li {
+.navbar ul li {
     display: inline-block;
     margin-right: 20px;
 }
 
-nav ul li a {
+.navbar ul li a {
     color: #fff;
     text-decoration: none;
     font-weight: bold;
     transition: color 0.3s ease;
 }
 
-nav ul li a:hover {
+.navbar ul li a:hover {
     color: #ffc107; /* yellow color on hover */
 }
 
