@@ -23,6 +23,10 @@ select {
   padding: 5px; /* Add padding to dropdowns */
 }
 
+main{
+  padding-bottom: 300px;
+}
+
 </style>
 <head>
   <title>Master Coders | Color Generation</title>
