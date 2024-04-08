@@ -212,6 +212,20 @@ elseif($num_colors_warning_display){echo $num_colors_warning; }
   </main>
 </body>
 <footer>
+  <button onclick="printExclude()">Print Exclude</button>
   <?php include 'footer.html' ?>
 </footer>
+<script>
+  var isGrayscale = false;
+
+  function printExclude() {
+    isGrayscale = !isGrayscale;
+
+    if (isGrayscale) {
+      document.body.style.filter = "grayscale(100%)";
+    } else {
+      document.body.style.filter = "none";
+    }
+  }
+</script>
 </html>
