@@ -95,7 +95,7 @@ footer {
         max-width: 150px;
     }
 
-    nav ul li {
+    .navbar ul li {
         margin-right: 10px;
     }
 }
