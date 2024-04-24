@@ -11,7 +11,8 @@ table{
 }
 
 .left-column {
-  width: 20%;
+  /* width: 20%; */
+  display: flex;
 }
 
 .right-column {
@@ -118,6 +119,8 @@ elseif($num_colors_warning_display){echo $num_colors_warning; }
               $warning = "<span style='color: red;'>Maximum one selection per color</span>"; // Update warning message
           }
         }
+        $selected = $_POST["selected_color"];
+        echo "The color is $selected";
     }
 
     echo "<table>";
@@ -130,6 +133,8 @@ elseif($num_colors_warning_display){echo $num_colors_warning; }
       //column 1
       echo "<td class='left-column'>";
       
+      echo "<input type='radio' name='selected_color' onchange='this.form.submit()' value='color$i'>";
+
       echo "<select name='color$i' id='color$i' onchange='this.form.submit()'>";
 
         foreach($all_color_names as $color){
@@ -185,7 +190,7 @@ elseif($num_colors_warning_display){echo $num_colors_warning; }
     array_splice($numbering, $t2_n);
 
     echo "<br>";
-    echo "<table>";
+    echo "<table id='mainTable'>";
       echo "<tr>";
       foreach($alphabet as $x){ //column headers
         echo "<th>";
@@ -200,13 +205,15 @@ elseif($num_colors_warning_display){echo $num_colors_warning; }
         echo "</td>";
         for($i = 0; $i < count($alphabet) - 1; $i++){
           echo "<td>";
-          // echo "color data here";
           echo "</td>";
         }
         echo "</tr>";
       }
+      document.write(highlightedColor);
     echo "</table>";
   }
+
+  $selected
 
   ?>
   </main>
@@ -215,6 +222,38 @@ elseif($num_colors_warning_display){echo $num_colors_warning; }
   <button onclick="printExclude()">Print Exclude</button>
   <?php include 'footer.html' ?>
 </footer>
+<script>
+
+  const colored = [];
+
+
+  var mainCellColor = document.getElementById("mainTable").getElementsByTagName("td");
+    $("#mainTable td").click(function() {
+        var rowIndex = $(this).parent().index();
+        var colIndex = $(this).index();
+        var currIndex = ((rowIndex) * $t2_n) + (colIndex);
+        var highlightedColor = "red";
+        alert(currIndex);
+        // l = 0;
+        // foreach($these_colors as $h) { //set each beginning color variable
+        //   if($selected = ${"color" . $l}){
+        //     highlightedColor = $h;
+        //   }
+        //   l++;
+        // }
+        // echo"";
+        if($(mainCellColor[currIndex]).css("background-color") == highlightedColor){ //cell already color
+            mainCellColor[currIndex].style.backgroundColor = "white";
+            colored.splice(colored.indexOf(currIndex),1)
+        } else { //was white before click
+            mainCellColor[currIndex].style.backgroundColor = highlightedColor;
+            colored.push(currIndex);
+        }
+
+    });
+
+
+</script>
 <script>
   var isGrayscale = false;
 
