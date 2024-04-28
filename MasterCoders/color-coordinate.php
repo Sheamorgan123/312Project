@@ -75,10 +75,10 @@ main{
 <form method="get" >
 
 <label for="n">Table Size(1-26)</label>
-<input type="text" name="n" id="n">
+<input type="text" name="n" id="n" value="<?php if(isset($_GET['n'])){echo htmlspecialchars($_GET['n']); }?>">
 
 <label for="num_colors">Color(1-10)</label>
-<input type="text" name="num_colors" id="num_colors">
+<input type="text" name="num_colors" id="num_colors" value="<?php if(isset($_GET['num_colors'])){echo htmlspecialchars($_GET['num_colors']); }?>">
 <span style="color:red;"><?php 
 if($both_warning_display){echo $both_warning; }
 elseif($n_warning_display){echo $n_warning; }
@@ -120,7 +120,6 @@ elseif($num_colors_warning_display){echo $num_colors_warning; }
           }
         }
         $selected = $_POST["selected_color"];
-        echo "The color is $selected";
     }
 
     echo "<table>";
@@ -133,7 +132,12 @@ elseif($num_colors_warning_display){echo $num_colors_warning; }
       //column 1
       echo "<td class='left-column'>";
       
-      echo "<input type='radio' name='selected_color' onchange='this.form.submit()' value='color$i'>";
+      $checked = "";
+      if (isset($_POST['selected_color']) && $_POST['selected_color'] === $all_color_names[$i]){
+        $checked = "checked";
+      }
+  
+      echo "<input type='radio' name='selected_color' id='color$i' value='$all_color_names[$i]' $checked>";
 
       echo "<select name='color$i' id='color$i' onchange='this.form.submit()'>";
 
@@ -209,7 +213,6 @@ elseif($num_colors_warning_display){echo $num_colors_warning; }
         }
         echo "</tr>";
       }
-      document.write(highlightedColor);
     echo "</table>";
   }
 
@@ -223,38 +226,117 @@ elseif($num_colors_warning_display){echo $num_colors_warning; }
   <?php include 'footer.html' ?>
 </footer>
 <script>
+//if colors and rows/columns set then take info for 
+<?php
+  if (isset($these_colors)) {
+    echo "var currentColors = " . json_encode($these_colors) . ";";
+  } else {
+    echo "var currentColors = null;";
+  }
 
-  const colored = [];
+  if (isset($alphabet)) {
+    echo "var currentLetters = " . json_encode($alphabet) . ";";
+  } else {
+    echo "var currentLetters = null;";
+  }
+
+  if (isset($numbering)) {
+    echo "var currentNumbers = " . json_encode($numbering) . ";";
+  } else {
+    echo "var currentNumbers = null;";
+  }
+?>
+
+const coloredCells = {};
 
 
-  var mainCellColor = document.getElementById("mainTable").getElementsByTagName("td");
-    $("#mainTable td").click(function() {
-        var rowIndex = $(this).parent().index();
-        var colIndex = $(this).index();
-        var currIndex = ((rowIndex) * $t2_n) + (colIndex);
-        var highlightedColor = "red";
-        alert(currIndex);
-        // l = 0;
-        // foreach($these_colors as $h) { //set each beginning color variable
-        //   if($selected = ${"color" . $l}){
-        //     highlightedColor = $h;
-        //   }
-        //   l++;
-        // }
-        // echo"";
-        if($(mainCellColor[currIndex]).css("background-color") == highlightedColor){ //cell already color
-            mainCellColor[currIndex].style.backgroundColor = "white";
-            colored.splice(colored.indexOf(currIndex),1)
-        } else { //was white before click
-            mainCellColor[currIndex].style.backgroundColor = highlightedColor;
-            colored.push(currIndex);
-        }
+//console.log("stored nyms", currentNumbers)
+//console.log("stored letters", currentLetters)
+function updateColoredCells(row, col, color) {
 
+  const cellIdentifier = currentLetters[col] + currentNumbers[row];
+
+  for (const key in coloredCells) {
+    const colorIndex = coloredCells[key].indexOf(cellIdentifier);
+    if (colorIndex !== -1) {
+      coloredCells[key].splice(colorIndex, 1);
+      //console.log("removed", key, cellIdentifier);
+    }
+    
+  }
+
+  if(color != null){
+    if (!coloredCells[color]) {
+     coloredCells[color] = [];
+    }
+
+    const colorIndex = coloredCells[color].indexOf(cellIdentifier);
+
+    //console.log("added", color, cellIdentifier)
+    coloredCells[color].push(cellIdentifier); // Append cellIdentifier
+  }
+
+  //console.log(coloredCells);
+
+  const colorStrings = Array(currentColors.length).fill("");
+  for (const color in coloredCells) {
+    colorStrings[currentColors.indexOf(color)] = getStringForColor(color);
+  }
+
+  //console.log("color strings", colorStrings);
+  updateRightColumn(colorStrings);
+}
+
+function getStringForColor(color) {
+  if (coloredCells[color]) {
+    return coloredCells[color].join(', ');
+  } else {
+    return '';
+  }
+}
+
+function updateRightColumn(arr) {
+    const rightColumnCells = document.querySelectorAll('.right-column');
+    rightColumnCells.forEach((cell, index) => {
+        cell.textContent = arr[index] || ''; // Update content with colorStrings value or empty string if undefined
     });
+}
 
 
-</script>
-<script>
+const tbody = document.querySelector('#mainTable');
+if(tbody){
+tbody.addEventListener('click', function (e) {
+  const cell = e.target.closest('td');
+  if (!cell) {return;} // Quit, not clicked on a cell
+  const row = cell.parentElement;
+
+  const selectedRadioButton = document.querySelector('input[name="selected_color"]:checked');
+
+  if(selectedRadioButton){
+    selectedColor = selectedRadioButton.value;
+    if (cell.style.backgroundColor){
+      if((cell.style.backgroundColor.trim()).toLowerCase() == (selectedColor.trim()).toLowerCase()){
+        cell.style.backgroundColor = null;
+        updateColoredCells(row.rowIndex - 1, cell.cellIndex, null);
+        //console.log('Removed Colored Cells:', row.rowIndex - 1, cell.cellIndex, null);
+      } else {
+        updateColoredCells(row.rowIndex - 1, cell.cellIndex, selectedColor);
+        //console.log('Colored Cells:', row.rowIndex - 1, cell.cellIndex, selectedColor);
+        cell.style.backgroundColor = selectedColor;
+      }
+      // console.log("bg: ", cell.style.backgroundColor, " s:", selectedColor.toLowerCase);
+      //cell.style.backgroundColor = null;
+    }  else if(!cell.style.backgroundColor && cell.cellIndex != 0){
+        cell.style.backgroundColor = selectedColor;
+        updateColoredCells(row.rowIndex - 1, cell.cellIndex, selectedColor);
+        //console.log('Colored Cells:', row.rowIndex - 1, cell.cellIndex, selectedColor);
+    } 
+  }
+
+
+});
+}
+
   var isGrayscale = false;
 
   function printExclude() {
