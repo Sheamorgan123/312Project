@@ -55,8 +55,8 @@
         else {
           $insert_query = $conn->prepare("INSERT INTO colors (Name, hex_value) VALUES (?, ?)");
           $insert_query->bind_param("ss", $color_name, $hex_value);
-          $insert_query->execute();
-          if ($insert_query->get_result()) {
+          $insertion_result = $insert_query->execute();
+          if ($insertion_result === TRUE) {
             echo "<p style='color: green;'>Color added successfully.</p>";
           }
           else {
