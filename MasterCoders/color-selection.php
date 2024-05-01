@@ -20,6 +20,10 @@
     $password = "";
     $dbname = "";
 
+    $message_add = "";
+    $message_delete = "";
+    $message_edit = "";
+
     $conn = new mysqli($servername, $username, $password, $dbname);
 
     if ($conn->connect_error) {
@@ -40,17 +44,17 @@
         $result = $check_query->get_result();
       
         if ($result->num_rows > 0) {
-          echo "<p style='color: red;'>Color already exists in the database.</p>";
+          $message_add = "<p style='color: red;'>Color already exists in the database.</p>";
         }
         else {
           $insert_query = $conn->prepare("INSERT INTO colors (Name, hex_value) VALUES (?, ?)");
           $insert_query->bind_param("ss", $color_name, $hex_value);
           $insertion_result = $insert_query->execute();
           if ($insertion_result === TRUE) {
-            echo "<p style='color: green;'>Color added successfully.</p>";
+            $message_add = "<p style='color: green;'>Color added successfully.</p>";
           }
           else {
-            echo "Error: " . $insert_query . "<br>" . $conn->error;
+            $message_add = "Error: " . $insert_query . "<br>" . $conn->error;
           }
         }
       }
@@ -74,14 +78,14 @@
 
           // If successfully deletes from database
           if ($deletion_result === TRUE) {
-            echo "<p style='color:green;'>Color deleted successfully.</p>";
+            $message_delete = "<p style='color:green;'>Color deleted successfully.</p>";
           }
           else {
-            echo "Error: " . $delete_query . "<br>" . $conn->error;
+            $message_delete = "Error: " . $delete_query . "<br>" . $conn->error;
           }
         }
         else {
-          echo "<p style='color:red;'>There must be at least 2 colors in database in order to delete a color.</p>";
+          $message_delete = "<p style='color:red;'>There must be at least 2 colors in database in order to delete a color.</p>";
         }
       }
     ?>
@@ -93,6 +97,7 @@
       Color Name: <input type="text" name="color_name" required><br>
       Hex Value: <input type="text" name="hex_value" pattern="#[0-9a-fA-F]{6}" title="Enter a valid hex color value (e.g., #RRGGBB)" required><br>
       <input type="submit" name="add_color" value="Add Color">
+      <?php echo $message_add ?>
     </form>
 
     <form method="post" action="<?php $_SERVER['PHP_SELF']; ?>">
@@ -107,6 +112,7 @@
         ?>
       </select>
       <input type='submit' name='delete_color' value='Delete Color'>
+      <?php echo $message_delete ?>
     </form>
 
     <?php
