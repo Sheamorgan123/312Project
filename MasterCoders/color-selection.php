@@ -100,6 +100,71 @@
       <?php echo $message_add ?>
     </form>
 
+  <h3>Edit Color</h3>
+<form method="post" action="<?php $_SERVER['PHP_SELF']; ?>">
+  <?php
+  // Get the selected color ID from the form (if submitted)
+  $selected_color_id = isset($_POST['color_id']) ? $_POST['color_id'] : '';
+
+  // If a color ID is selected, pre-fill the form with existing values
+  if ($selected_color_id) {
+    $edit_query = $conn->prepare("SELECT Name, hex_value FROM colors WHERE id=?");
+    $edit_query->bind_param("i", $selected_color_id);
+    $edit_query->execute();
+    $edit_result = $edit_query->get_result();
+    $color_row = $edit_result->fetch_assoc();
+
+    if ($color_row) {
+      $color_name = $color_row['Name'];
+      $hex_value = $color_row['hex_value'];
+    } else {
+      // Handle case where selected color ID doesn't exist
+      $color_name = "";
+      $hex_value = "";
+      echo "<p style='color: red;'>Error: Color with ID $selected_color_id not found.</p>";
+    }
+  } else {
+    // No color selected, set empty values
+    $color_name = "";
+    $hex_value = "";
+  }
+  ?>
+  <input type="hidden" name="color_id" value="<?php echo $selected_color_id; ?>">
+  Color Name: <input type="text" name="color_name" value="<?php echo $color_name; ?>" required><br>
+  Hex Value: <input type="text" name="hex_value" value="<?php echo $hex_value; ?>" pattern="#[0-9a-fA-F]{6}" title="Enter a valid hex color value (e.g., #RRGGBB)" required><br>
+  <input type="submit" name="edit_color" value="Edit Color">
+</form>
+
+<?php
+// Process edit color form submission
+if (isset($_POST['edit_color'])) {
+  $color_id = $_POST['color_id'];
+  $color_name = $_POST['color_name'];
+  $hex_value = $_POST['hex_value'];
+
+  // Check for duplicate name or hex value (excluding the edited color itself)
+  $check_query = $conn->prepare("SELECT * FROM colors WHERE (Name=? OR hex_value=?) AND id!=?");
+  $check_query->bind_param("sss", $color_name, $hex_value, $color_id);
+  $check_query->execute();
+  $result = $check_query->get_result();
+
+  if ($result->num_rows > 0) {
+    echo "<p style='color: red;'>Error: Color name or hex value already exists.</p>";
+  } else {
+    // Update the color in the database
+    $update_query = $conn->prepare("UPDATE colors SET Name=?, hex_value=? WHERE id=?");
+    $update_query->bind_param("sss", $color_name, $hex_value, $color_id);
+    $update_result = $update_query->execute();
+
+    if ($update_result === TRUE) {
+      echo "<p style='color: green;'>Color updated successfully.</p>";
+    } else {
+      echo "Error: " . $update_query . "<br>" . $conn->error;
+    }
+  }
+}
+?>
+
     <form method="post" action="<?php $_SERVER['PHP_SELF']; ?>">
       <h3>Delete a Color:</h3>
       <select name='colors_list'>
