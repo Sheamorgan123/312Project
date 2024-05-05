@@ -154,13 +154,14 @@ if (isset($_POST['edit_color'])) {
     $update_result = $update_query->execute();
 
     if ($update_result === TRUE) {
-      echo "<p style='color: green;'>Color updated successfully.</p>";
+      $message_edit = "<p style='color: green;'>Color updated successfully.</p>";
     } else {
       echo "Error: " . $update_query . "<br>" . $conn->error;
     }
   }
 }
 ?>
+echo $message_edit;
 
 
 
