@@ -88,82 +88,62 @@
           $message_delete = "<p style='color:red;'>There must be at least 2 colors in database in order to delete a color.</p>";
         }
       }
-    ?>
+
+      // Process edit color form submission
+      if (isset($_POST['edit_color'])) {
+        $color_id = $_POST['edit_colors_list'];
+        $color_name = $_POST['color_name'];
+        $hex_value = $_POST['hex_value'];
+
+        // Validate inputs
+        if (empty($color_name) || empty($hex_value)) {
+          $message_edit = "<p style='color: red;'>Error: Color name and hex value cannot be empty.</p>";
+        } else if (!preg_match("/^#[0-9a-fA-F]{6}$/", $hex_value)) {
+          $message_edit = "<p style='color: red;'>Error: Please enter a valid hex color value in the format #RRGGBB.</p>";
+        } else {
+        // Update the color in the database
+          $update_query = $conn->prepare("UPDATE colors SET Name=?, hex_value=? WHERE id=?");
+          $update_query->bind_param("ssi", $color_name, $hex_value, $color_id);
+          $update_result = $update_query->execute();
+          
+          $colors_query = "SELECT id, Name FROM colors";
+          $colors_result = $conn->query($colors_query);
+
+          if ($update_result === TRUE) {
+            $message_edit = "<p style='color: green;'>Color updated successfully.</p>";
+          } else {
+            $message_edit = "Error: " . $update_query . "<br>" . $conn->error;
+          }
+        }
+      }
+?>
 
     <h2>Add/Edit/Delete Colors</h2>
-
+    <h3>Add a Color:</h3>
     <form method="post" action="<?php $_SERVER['PHP_SELF']; ?>">
-      <h3>Add a Color:</h3>
       Color Name: <input type="text" name="color_name" required><br>
       Hex Value: <input type="text" name="hex_value" pattern="#[0-9a-fA-F]{6}" title="Enter a valid hex color value (e.g., #RRGGBB)" required><br>
       <input type="submit" name="add_color" value="Add Color">
-      <?php echo $message_add ?>
+      <?php echo $message_add; ?>
     </form>
 
-<h3>Edit Color</h3>
-<form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-  <?php
-  // Get the selected color ID from the form (if submitted)
-  $selected_color_id = isset($_POST['color_id']) ? $_POST['color_id'] : '';
-
-  // If a color ID is selected, pre-fill the form with existing values
-  if ($selected_color_id) {
-    $edit_query = $conn->prepare("SELECT Name, hex_value FROM colors WHERE id=?");
-    $edit_query->bind_param("i", $selected_color_id);
-    $edit_query->execute();
-    $edit_result = $edit_query->get_result();
-    $color_row = $edit_result->fetch_assoc();
-
-    if ($color_row) {
-      $color_name = $color_row['Name'];
-      $hex_value = $color_row['hex_value'];
-    } else {
-      // Handle case where selected color ID doesn't exist
-      $color_name = "";
-      $hex_value = "";
-      echo "<p style='color: red;'>Error: Color with ID $selected_color_id not found.</p>";
-    }
-  } else {
-    // No color selected, set empty values
-    $color_name = "";
-    $hex_value = "";
-  }
-  ?>
-  <input type="hidden" name="color_id" value="<?php echo $selected_color_id; ?>">
-  Color Name: <input type="text" name="color_name" value="<?php echo $color_name; ?>" required><br>
-  Hex Value: <input type="text" name="hex_value" value="<?php echo $hex_value; ?>" pattern="#[0-9a-fA-F]{6}" title="Enter a valid hex color value (e.g., #RRGGBB)" required><br>
-  <input type="submit" name="edit_color" value="Edit Color">
-</form>
-
-<?php
-// Process edit color form submission
-if (isset($_POST['edit_color'])) {
-  $color_id = $_POST['color_id'];
-  $color_name = $_POST['color_name'];
-  $hex_value = $_POST['hex_value'];
-
-  // Validate inputs
-  if (empty($color_name) || empty($hex_value)) {
-    echo "<p style='color: red;'>Error: Color name and hex value cannot be empty.</p>";
-  } else if (!preg_match("/^#[0-9a-fA-F]{6}$/", $hex_value)) {
-    echo "<p style='color: red;'>Error: Please enter a valid hex color value in the format #RRGGBB.</p>";
-  } else {
-    // Update the color in the database
-    $update_query = $conn->prepare("UPDATE colors SET Name = ?, hex_value = ? WHERE id = ?");
-    $update_query->bind_param("ssi", $color_name, $hex_value, $color_id);
-    $update_result = $update_query->execute();
-
-    if ($update_result === TRUE) {
-      $message_edit = "<p style='color: green;'>Color updated successfully.</p>";
-    } else {
-      echo "Error: " . $update_query . "<br>" . $conn->error;
-    }
-  }
-}
-  echo $message_edit;
-?>
-
-
+    <h3>Edit a Color:</h3>
+    <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+      Choose a Color to edit: 
+      <select name='edit_colors_list'>
+      <?php 
+        $colors_query = "SELECT id, Name FROM colors";
+        $colors_result = $conn->query($colors_query);
+        while ($color_row = $colors_result->fetch_assoc()) {
+          echo "<option value='{$color_row['id']}'>{$color_row['Name']}</option>";
+        }
+      ?>
+      </select> <br>
+      Color Name: <input type="text" name="color_name" required><br>
+      Hex Value: <input type="text" name="hex_value" pattern="#[0-9a-fA-F]{6}" title="Enter a valid hex color value (e.g., #RRGGBB)" required><br>
+      <input type="submit" name="edit_color" value="Edit Color">
+      <?php echo $message_edit; ?>
+    </form>
 
     <form method="post" action="<?php $_SERVER['PHP_SELF']; ?>">
       <h3>Delete a Color:</h3>
@@ -177,7 +157,7 @@ if (isset($_POST['edit_color'])) {
         ?>
       </select>
       <input type='submit' name='delete_color' value='Delete Color'>
-      <?php echo $message_delete ?>
+      <?php echo $message_delete; ?>
     </form>
 
     <?php
