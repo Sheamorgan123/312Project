@@ -142,18 +142,26 @@ if (isset($_POST['edit_color'])) {
   $color_name = $_POST['color_name'];
   $hex_value = $_POST['hex_value'];
 
-  // Update the color in the database
-  $update_query = $conn->prepare("UPDATE colors SET Name=?, hex_value=? WHERE id=?");
-  $update_query->bind_param("ssi", $color_name, $hex_value, $color_id);
-  $update_result = $update_query->execute();
-
-  if ($update_result === TRUE) {
-    echo "<p style='color: green;'>Color updated successfully.</p>";
+  // Validate inputs
+  if (empty($color_name) || empty($hex_value)) {
+    echo "<p style='color: red;'>Error: Color name and hex value cannot be empty.</p>";
+  } else if (!preg_match("/^#[0-9a-fA-F]{6}$/", $hex_value)) {
+    echo "<p style='color: red;'>Error: Please enter a valid hex color value in the format #RRGGBB.</p>";
   } else {
-    echo "Error: " . $update_query . "<br>" . $conn->error;
+    // Update the color in the database
+    $update_query = $conn->prepare("UPDATE colors SET Name=?, hex_value=? WHERE id=?");
+    $update_query->bind_param("ssi", $color_name, $hex_value, $color_id);
+    $update_result = $update_query->execute();
+
+    if ($update_result === TRUE) {
+      echo "<p style='color: green;'>Color updated successfully.</p>";
+    } else {
+      echo "Error: " . $update_query . "<br>" . $conn->error;
+    }
   }
 }
 ?>
+
 
 
     <form method="post" action="<?php $_SERVER['PHP_SELF']; ?>">
