@@ -148,20 +148,18 @@ if (isset($_POST['edit_color'])) {
   } else if (!preg_match("/^#[0-9a-fA-F]{6}$/", $hex_value)) {
     echo "<p style='color: red;'>Error: Please enter a valid hex color value in the format #RRGGBB.</p>";
   } else {
-    // Update the color in the database
-    $update_query = $conn->prepare("UPDATE colors SET Name = ?, hex_value = ? WHERE id = ?");
-    $update_query->bind_param("ssi", $color_name, $hex_value, $color_id);
-    $update_result = $update_query->execute();
-
-    if ($update_result === TRUE) {
+      // Update the color in the database
+    $edit_query = $conn->prepare("UPDATE colors SET name=?, hex_value=? WHERE id=?");
+    $edit_query->bind_param("ssi", $color_name, $hex_value, $color_id);
+    $edit_result = $edit_query->execute();
+    if ($edit_result === TRUE) {
       $message_edit = "<p style='color: green;'>Color updated successfully.</p>";
     } else {
-      echo "Error: " . $update_query . "<br>" . $conn->error;
+      echo "Error: " . $edit_query . "<br>" . $conn->error;
     }
   }
-}
   echo $message_edit;
-?>
+  ?>
 
 
 
