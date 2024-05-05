@@ -100,8 +100,8 @@
       <?php echo $message_add ?>
     </form>
 
-  <h3>Edit Color</h3>
-<form method="post" action="<?php $_SERVER['PHP_SELF']; ?>">
+<h3>Edit Color</h3>
+<form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
   <?php
   // Get the selected color ID from the form (if submitted)
   $selected_color_id = isset($_POST['color_id']) ? $_POST['color_id'] : '';
@@ -142,28 +142,19 @@ if (isset($_POST['edit_color'])) {
   $color_name = $_POST['color_name'];
   $hex_value = $_POST['hex_value'];
 
-  // Check for duplicate name or hex value (excluding the edited color itself)
-  $check_query = $conn->prepare("SELECT * FROM colors WHERE (Name=? OR hex_value=?) AND id!=?");
-  $check_query->bind_param("sss", $color_name, $hex_value, $color_id);
-  $check_query->execute();
-  $result = $check_query->get_result();
+  // Update the color in the database
+  $update_query = $conn->prepare("UPDATE colors SET Name=?, hex_value=? WHERE id=?");
+  $update_query->bind_param("ssi", $color_name, $hex_value, $color_id);
+  $update_result = $update_query->execute();
 
-  if ($result->num_rows > 0) {
-    echo "<p style='color: red;'>Error: Color name or hex value already exists.</p>";
+  if ($update_result === TRUE) {
+    echo "<p style='color: green;'>Color updated successfully.</p>";
   } else {
-    // Update the color in the database
-    $update_query = $conn->prepare("UPDATE colors SET Name=?, hex_value=? WHERE id=?");
-    $update_query->bind_param("sss", $color_name, $hex_value, $color_id);
-    $update_result = $update_query->execute();
-
-    if ($update_result === TRUE) {
-      echo "<p style='color: green;'>Color updated successfully.</p>";
-    } else {
-      echo "Error: " . $update_query . "<br>" . $conn->error;
-    }
+    echo "Error: " . $update_query . "<br>" . $conn->error;
   }
 }
 ?>
+
 
     <form method="post" action="<?php $_SERVER['PHP_SELF']; ?>">
       <h3>Delete a Color:</h3>
