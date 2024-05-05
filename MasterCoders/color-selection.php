@@ -160,8 +160,8 @@ if (isset($_POST['edit_color'])) {
     }
   }
 }
+  echo $message_edit;
 ?>
-echo $message_edit;
 
 
 
