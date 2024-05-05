@@ -149,17 +149,18 @@ if (isset($_POST['edit_color'])) {
     echo "<p style='color: red;'>Error: Please enter a valid hex color value in the format #RRGGBB.</p>";
   } else {
     // Update the color in the database
-    $update_query = $conn->prepare("UPDATE colors SET Name=?, hex_value=? WHERE id=?");
+    $update_query = $conn->prepare("UPDATE colors SET Name = ?, hex_value = ? WHERE id = ?");
     $update_query->bind_param("ssi", $color_name, $hex_value, $color_id);
     $update_result = $update_query->execute();
 
     if ($update_result === TRUE) {
-      echo "<p style='color: green;'>Color updated successfully.</p>";
+      $message_edit = "<p style='color: green;'>Color updated successfully.</p>";
     } else {
       echo "Error: " . $update_query . "<br>" . $conn->error;
     }
   }
 }
+  echo $message_edit;
 ?>
 
 
