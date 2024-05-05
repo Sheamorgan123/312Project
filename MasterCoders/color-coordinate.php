@@ -95,9 +95,62 @@ elseif($num_colors_warning_display){echo $num_colors_warning; }
     
     //Print 2 tables, one 2 columns x num_colors
     $t1_num_rows = $_GET["num_colors"];
+    $all_color_names = [];
+    $all_color_hex = [];
 
-    $all_color_names = array("Red", "Orange", "Yellow", "Green", "Blue", "Purple", "Grey", "Brown", "Black", "Teal");
-    $these_colors = array("Red", "Orange", "Yellow", "Green", "Blue", "Purple", "Grey", "Brown", "Black", "Teal");
+    $these_colors = [];
+
+    #We each put our own login/database information here
+    $servername = "faure";
+    $username = "";
+    $password = "";
+    $dbname = "";
+
+    $message_add = "";
+    $message_delete = "";
+    $message_edit = "";
+
+    $conn = new mysqli($servername, $username, $password, $dbname);
+
+    if ($conn->connect_error) {
+        die("Could not connect to server. " . $conn->connect_error);
+    }
+    echo "<script>console.log('Successfully connected to server.');</script>";
+
+    // Query to retrieve colors from the database
+    $colors_query = "SELECT id, Name, hex_value FROM colors";
+    $colors_result = $conn->query($colors_query);
+    
+    // Check if there are any colors retrieved
+    if ($colors_result->num_rows > 0) {
+        // Loop through each row of the result set
+        while ($color_row = $colors_result->fetch_assoc()) {
+            $database = True;
+            $color_id = $color_row['id'];
+            $color_name = ucfirst(strtolower($color_row['Name']));
+            $hex_value = ucfirst(strtolower($color_row['hex_value']));
+
+    
+            // Output the color information
+            // echo "Color ID: $color_id, Name: $color_name, Hex Value: $hex_value<br>";
+            array_push($all_color_names, $color_name);
+            array_push($all_color_hex, $hex_value);
+            array_push($these_colors, $color_name);
+        }
+    } else {
+        // No colors found in the database
+        echo "No colors found in the database.";
+    }
+    
+    // Close the database connection
+    $conn->close();
+
+    $all_hex = array();
+
+    for ($i = 0; $i < count($all_color_names); $i++) {
+        // Assign the key-value pair to the associative array
+        $all_hex[$all_color_names[$i]] = $all_color_hex[$i];
+    }
 
     array_splice($these_colors, $t1_num_rows);
 
@@ -107,23 +160,22 @@ elseif($num_colors_warning_display){echo $num_colors_warning; }
         $j++;
     }
     
-    $warning = "";
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
       $warning = "";
         for ($k = 0; $k < $t1_num_rows; $k++) { //set each beginning color variable
             if(isset($_POST["color" . $k])){
                 ${"color" . $k} = $_POST["color" . $k];
             }
-            if (strpos(${"color" . $k}, '!') !== false) { // Check if '!' exists in the color string
-              ${"color" . $k} = substr(${"color" . $k}, 1); //remove exclamation point
-              $warning = "<span style='color: red;'>Maximum one selection per color</span>"; // Update warning message
-          }
         }
-        $selected = $_POST["selected_color"];
+        $selected = null;
+        if(isset($_POST["selected_color"])){
+          $selected = $_POST["selected_color"];
+        }
+        
     }
 
     echo "<table>";
-    echo "<form method ='post'>";
+    echo "<form method ='post' id = 'colorForm'>";
 
 
     for($i = 0; $i < $t1_num_rows; $i++){ //for each row
@@ -137,34 +189,14 @@ elseif($num_colors_warning_display){echo $num_colors_warning; }
         $checked = "checked";
       }
   
-      echo "<input type='radio' name='selected_color' id='color$i' value='$all_color_names[$i]' $checked>";
+      echo "<input type='radio' name='selected_color' id='radio_color$i' value='$i' $checked>";
 
-      echo "<select name='color$i' id='color$i' onchange='this.form.submit()'>";
+      echo "<select name='color$i' id='color$i'>";
 
-        foreach($all_color_names as $color){
-
-          //if $color1 == $color
-          if (${"color". $i} == $color){ //if the current dropdown is the given color
-            echo "<option value='$color' selected='selected'>$color </option>";
-          }
-          else{ //curent row does not match given color
-            $already_active = false; //color isn't in current row, checking if it's in any other row
-            for($l = 0; $l < $t1_num_rows; $l++){ //for each row
-              if(${"color" . $l} == $color){ //check if the color for that row matches the current color
-                $already_active = true; // if it does that color is already active
-                break;
-              }
-            }
-          if ($already_active) { //if color is not selected in this dropdown but it is in other
-                //you don't want to actaully be able to select it!!!
-                echo "<option value='!" . ${"color" . $i} . "'>$color</option>"; //name of color trying to be selected?
-             } //if it's not selected by this dropdown, and not selected by any other dropdown, do a regular echo
-             else {
-                echo "<option value='$color'>$color</option>"; // option but not selected
-             }
-          }
-
-        }
+      foreach ($all_color_names as $color) {
+        $selected = ($color == ${"color" . $i}) ? "selected='selected'" : "";
+        echo "<option value='$color' $selected>$color</option>";
+    }
 
       echo "</select>";
       echo "</td>";
@@ -177,13 +209,15 @@ elseif($num_colors_warning_display){echo $num_colors_warning; }
       
     }
 
-      echo $warning;
+    echo "<div id='warningDiv' style='display: none;' padding: 'none;'>";
+      echo "<span style='color: red;'>Maximum one selection per color</span>";
+    echo "</div>";
 
     echo "<br>";
 
     echo "</form>";
     echo "</table>";
-
+     
     //2nd table n+1 X n+1 Top row: A-Z Left Column: 1-26
     $t2_n = $_GET["n"];
 
@@ -226,12 +260,18 @@ elseif($num_colors_warning_display){echo $num_colors_warning; }
   <?php include 'footer.html' ?>
 </footer>
 <script>
-//if colors and rows/columns set then take info for 
+
 <?php
   if (isset($these_colors)) {
     echo "var currentColors = " . json_encode($these_colors) . ";";
   } else {
     echo "var currentColors = null;";
+  }
+
+  if (isset($all_hex)) {
+    echo "var hexColors = " . json_encode($all_hex) . ";";
+  } else {
+    echo "var hexColors = null;";
   }
 
   if (isset($alphabet)) {
@@ -247,9 +287,45 @@ elseif($num_colors_warning_display){echo $num_colors_warning; }
   }
 ?>
 
+const dropdowns = document.querySelectorAll('select');
+const warningDiv = document.getElementById('warningDiv');
+
+dropdowns.forEach((dropdown, index) => {
+    dropdown.addEventListener('change', function(event) {
+        event.preventDefault(); // Prevent the default form submission behavior
+        const selectedColor = this.value;
+        // console.log(selectedColor, index);
+
+        if (currentColors.includes(selectedColor)) {
+            // console.log("Color already selected. Choose a different color.");
+            warningDiv.style.display = 'block';
+            this.value = currentColors[index];
+        } else{
+          const previousColor = currentColors[index];
+          colorchange(previousColor, selectedColor);
+          currentColors[index] = selectedColor;
+          warningDiv.style.display = 'none';
+        }
+        
+    });
+});
+
+
+function colorchange(oldColor, newColor){
+
+  for (const key in coloredCells) {
+    if (coloredCells.hasOwnProperty(oldColor)) {
+      swapColors(oldColor, newColor, coloredCells[oldColor]);
+      coloredCells[newColor] = coloredCells[oldColor]; // Create new property with new key and copy value
+      delete coloredCells[oldColor]; // Delete old property
+    }
+  }
+
+}
+
 const coloredCells = {};
 
-
+console.log(currentColors);
 //console.log("stored nyms", currentNumbers)
 //console.log("stored letters", currentLetters)
 function updateColoredCells(row, col, color) {
@@ -309,32 +385,64 @@ tbody.addEventListener('click', function (e) {
   const cell = e.target.closest('td');
   if (!cell) {return;} // Quit, not clicked on a cell
   const row = cell.parentElement;
-
+  
   const selectedRadioButton = document.querySelector('input[name="selected_color"]:checked');
 
   if(selectedRadioButton){
-    selectedColor = selectedRadioButton.value;
+    selectedColor = currentColors[selectedRadioButton.value];
+    
+    // console.log("Color", selectedColor);
+
+    // console.log("HEXES: ", hexColors);
+
+    selectedHex = hexColors[selectedColor];
+    console.log("Color", selectedHex);
+
+    selectedRGB = hexToRgb(selectedHex);
     if (cell.style.backgroundColor){
-      if((cell.style.backgroundColor.trim()).toLowerCase() == (selectedColor.trim()).toLowerCase()){
+      console.log("bg", cell.style.backgroundColor)
+      console.log("hex", selectedHex)
+      console.log("rgv", selectedRGB)
+      if(cell.style.backgroundColor == selectedRGB){
         cell.style.backgroundColor = null;
         updateColoredCells(row.rowIndex - 1, cell.cellIndex, null);
         //console.log('Removed Colored Cells:', row.rowIndex - 1, cell.cellIndex, null);
       } else {
         updateColoredCells(row.rowIndex - 1, cell.cellIndex, selectedColor);
         //console.log('Colored Cells:', row.rowIndex - 1, cell.cellIndex, selectedColor);
-        cell.style.backgroundColor = selectedColor;
+        cell.style.backgroundColor = selectedHex;
       }
       // console.log("bg: ", cell.style.backgroundColor, " s:", selectedColor.toLowerCase);
       //cell.style.backgroundColor = null;
     }  else if(!cell.style.backgroundColor && cell.cellIndex != 0){
-        cell.style.backgroundColor = selectedColor;
+        cell.style.backgroundColor = selectedHex;
         updateColoredCells(row.rowIndex - 1, cell.cellIndex, selectedColor);
         //console.log('Colored Cells:', row.rowIndex - 1, cell.cellIndex, selectedColor);
     } 
   }
-
-
 });
+}
+
+const hexToRgb = (hex) => {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    
+    // return {r, g, b} 
+    strVal = "rgb(" + r + ", " + g + ", " + b + ")";
+    return strVal;
+}
+
+//If dropdown color is changed
+function swapColors(oldC, newC, position){
+  for (const coordinate of position) {
+    const row = parseInt(coordinate.substring(1)) - 1;
+    const col = coordinate.charCodeAt(0) - 65; 
+
+    const cell = tbody.rows[row+1].cells[col+1];
+
+    cell.style.backgroundColor = hexColors[newC];
+  }
 }
 
   var isGrayscale = false;
